@@ -1,0 +1,25 @@
+---
+- name: Install Apache and enabling ports
+  block:
+  - name: install httpd
+    package: name=httpd
+
+  - name: enabling and starting httpd service
+    service: name=httpd enabled=yes state=started
+
+  - name: creating html-file
+    template: src=index.j2.html dest=/var/www/html/index.html owner=root group=root mode=0644
+    notify:
+        - reload httpd.service
+
+  - name: Enabling 80 (http)
+    firewalld: port=80/tcp state=enabled permanent=yes immediate=yes
+    notify:
+        - reload firewall
+
+  - name: Enabling 443 (https)
+    firewalld: port=443/tcp state=enabled permanent=yes immediate=yes
+    notify:
+        - reload firewall
+
+...
